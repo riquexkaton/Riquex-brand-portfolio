@@ -23,7 +23,7 @@ import ScrollHint from './ScrollHint.astro';
         items={heroWords}
         speed={0.45}
         itemClass="block pr-[0.28em] text-[clamp(6rem,17vw,20rem)] leading-[1.08] font-medium tracking-[-0.06em]"
-        splitUnitClass="motion:animate-rise motion:[animation-delay:calc(250ms+var(--i)*22ms)]"
+        splitUnitClass="motion:animate-rise motion:[animation-delay:calc(1200ms+var(--i)*22ms)]"
       />
     </div>
     <!-- The curtain lives outside the clipping box and overhangs it by 1px: inside the same clip, the
@@ -53,14 +53,14 @@ import ScrollHint from './ScrollHint.astro';
       <SplitChars
         text={hero.tagline}
         by="words"
-        unitClass="motion:animate-rise motion:[--rise-from:110%] motion:[animation-delay:calc(550ms+var(--i)*30ms)] motion:[animation-duration:0.9s]"
+        unitClass="motion:animate-rise motion:[--rise-from:110%] motion:[animation-delay:calc(1500ms+var(--i)*30ms)] motion:[animation-duration:0.9s]"
       />
     </p>
     <div class="motion:animate-fade-in motion:[--fade-y:18px]">
       <a
         href={hero.cta.href}
         data-magnetic
-        class="group inline-flex items-center gap-[clamp(1rem,1.6vw,1.5rem)] bg-paper py-[clamp(0.5rem,0.7vw,0.625rem)] pr-[clamp(0.5rem,0.7vw,0.625rem)] pl-[clamp(1.625rem,2.4vw,2.25rem)] text-[clamp(0.9375rem,1.2vw,1.1875rem)] leading-none font-bold tracking-[0.04em] text-black uppercase [transition:background-color_.35s,color_.35s,translate_.6s_var(--ease-power3)] hover:bg-white"
+        class="group inline-flex items-center gap-[clamp(1rem,1.6vw,1.5rem)] bg-paper py-[clamp(0.5rem,0.7vw,0.625rem)] pr-[clamp(0.5rem,0.7vw,0.625rem)] pl-[clamp(1.625rem,2.4vw,2.25rem)] text-[clamp(0.9375rem,1.2vw,1.1875rem)] leading-none font-bold tracking-[0.04em] text-black uppercase cta hover:bg-white"
       >
         <span>{hero.cta.label}</span>
         <span

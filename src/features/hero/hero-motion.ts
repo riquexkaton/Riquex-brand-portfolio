@@ -1,23 +1,4 @@
-import { motionEnabled, onMotionReady } from '@/motion/runtime';
-
-const MAGNET_X = 0.25;
-const MAGNET_Y = 0.35;
-
-/** The CTA follows the pointer (CSS transitions the `translate`). */
-function magnetize(element: HTMLElement): void {
-  element.addEventListener('pointermove', ({ clientX, clientY }) => {
-    const rect = element.getBoundingClientRect();
-    const x = (clientX - rect.left - rect.width / 2) * MAGNET_X;
-    const y = (clientY - rect.top - rect.height / 2) * MAGNET_Y;
-    element.style.translate = `${x}px ${y}px`;
-  });
-  element.addEventListener('pointerleave', () => {
-    element.style.translate = '';
-  });
-}
-
-const cta = document.querySelector<HTMLElement>('[data-magnetic]');
-if (cta && motionEnabled() && matchMedia('(pointer: fine)').matches) magnetize(cta);
+import { onMotionReady } from '@/motion/runtime';
 
 onMotionReady(({ gsap }) => {
   const section = document.querySelector('#top');

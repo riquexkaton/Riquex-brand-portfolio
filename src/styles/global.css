@@ -27,11 +27,48 @@
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-expo-in-out: cubic-bezier(0.87, 0, 0.13, 1);
   --ease-power3: cubic-bezier(0.25, 1, 0.5, 1);
+  /* GSAP elastic.out(1, 0.45), sampled every 2.5% (flat within 0.002 after 77.5%). */
+  --ease-elastic: linear(
+    0,
+    0.21,
+    0.458,
+    0.703,
+    0.913,
+    1.073,
+    1.177,
+    1.228,
+    1.235,
+    1.21,
+    1.166,
+    1.114,
+    1.063,
+    1.018,
+    0.985,
+    0.963,
+    0.952,
+    0.951,
+    0.956,
+    0.965,
+    0.976,
+    0.987,
+    0.996,
+    1.003,
+    1.008,
+    1.01,
+    1.01,
+    1.009,
+    1.007,
+    1.005,
+    1.003,
+    1.001 77.5%,
+    1
+  );
 
+  /* Hero intro (design): the portrait settles alone, the rest enters at 1.2s. */
   --animate-curtain: curtain 1.1s var(--ease-expo-in-out) both;
-  --animate-settle: settle 1.4s var(--ease-expo) both;
+  --animate-settle: settle 2s var(--ease-power3) both;
   --animate-rise: rise 1.1s var(--ease-expo) both;
-  --animate-fade-in: fade-in 0.8s var(--ease-power3) 0.5s both;
+  --animate-fade-in: fade-in 0.8s var(--ease-power3) 1.45s both;
   --animate-scroll-hint: scroll-hint 1.9s infinite;
   --animate-arrow-in: arrow-in 0.55s var(--ease-expo);
 
@@ -47,7 +84,7 @@
   }
   @keyframes settle {
     from {
-      scale: 1.1;
+      scale: 1.15;
     }
   }
   @keyframes rise {
@@ -119,6 +156,20 @@
    `left`, not a transform: a transformed ancestor would break the fixed ScrollTrigger pin. */
 @utility menu-shift {
   @apply relative left-0 transition-[left] duration-600 ease-expo-in-out motion-reduce:transition-none menu-open:-left-menu-shift menu-open:duration-900 menu-open:ease-expo;
+}
+
+/* Button feedback (design): colors fade, the magnetic pull eases back, and a press squeezes to .93
+   in .15s, then springs back with elastic.out(1, .45). The transition list is shared, so set it here. */
+@utility cta {
+  transition-property: background-color, border-color, color, translate, scale;
+  transition-duration: 0.35s, 0.35s, 0.35s, 0.6s, 0.6s;
+  transition-timing-function: ease, ease, ease, var(--ease-power3), var(--ease-elastic);
+
+  &:where(.motion *):active {
+    scale: 0.93;
+    transition-duration: 0.35s, 0.35s, 0.35s, 0.6s, 0.15s;
+    transition-timing-function: ease, ease, ease, var(--ease-power3), var(--ease-out);
+  }
 }
 
 /* Fade-up reveal for [data-observe] blocks (design: y 28px, 0.9s power3.out). */

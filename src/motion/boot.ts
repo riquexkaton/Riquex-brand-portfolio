@@ -1,3 +1,4 @@
+import { initMagnetic } from './magnetic';
 import { initMarquees } from './marquee';
 import { observeReveals } from './reveal';
 import { motionEnabled, startMotion } from './runtime';
@@ -5,5 +6,6 @@ import { motionEnabled, startMotion } from './runtime';
 if (motionEnabled()) {
   observeReveals();
   initMarquees();
+  initMagnetic();
   startMotion();
 }

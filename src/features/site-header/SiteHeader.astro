@@ -3,7 +3,8 @@ import { header } from '@/data/navigation';
 
 import SideMenu from './SideMenu.astro';
 
-const button = 'pointer-events-auto bg-white px-4 py-3.5 text-[0.9375rem] leading-none font-bold text-black uppercase';
+const button =
+  'cta pointer-events-auto bg-paper px-4 py-3.5 text-[0.9375rem] leading-none font-bold text-black uppercase hover:bg-white';
 ---
 
 <a
@@ -21,12 +22,14 @@ const button = 'pointer-events-auto bg-white px-4 py-3.5 text-[0.9375rem] leadin
     type="button"
     aria-expanded="false"
     aria-controls="menu-lateral"
-    class:list={[button, 'flex cursor-pointer items-center gap-3']}
+    class:list={[button, 'group flex cursor-pointer items-center gap-3']}
   >
     <span>{header.menuButton}</span>
-    <span aria-hidden="true" class="flex w-5 flex-col gap-[0.3125rem]">
-      <span class="h-0.5 bg-black"></span>
-      <span class="ml-auto h-0.5 w-[65%] bg-black"></span>
+    <span aria-hidden="true" class="flex size-5 items-center overflow-hidden">
+      <span class="flex w-full flex-col gap-[0.3125rem] motion:group-hover:animate-arrow-in">
+        <span class="h-0.5 bg-current"></span>
+        <span class="ml-auto h-0.5 w-[65%] bg-current"></span>
+      </span>
     </span>
   </button>
 </header>
