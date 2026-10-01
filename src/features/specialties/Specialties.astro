@@ -1,0 +1,14 @@
+---
+import { specialties } from '@/data/marquees';
+import Marquee from '@/ui/Marquee.astro';
+---
+
+<section aria-label={specialties.ariaLabel} class="border-y border-paper/14 py-[clamp(1.125rem,2.4vw,2rem)]">
+  <p class="sr-only">{specialties.words.join(', ')}.</p>
+  <Marquee
+    items={specialties.words}
+    speed={0.6}
+    itemClass="flex items-center gap-[0.4em] pr-[0.4em] text-[clamp(2.5rem,7vw,7.5rem)] leading-[1.05] font-medium tracking-[-0.05em]"
+    dotClass="size-[0.16em]"
+  />
+</section>

@@ -1,0 +1,16 @@
+---
+import { notFound } from '@/data/not-found';
+import MonoLabel from '@/ui/MonoLabel.astro';
+---
+
+<main class="flex min-h-svh flex-col items-start justify-center gap-8 px-[clamp(1rem,3vw,2.5rem)]">
+  <MonoLabel>{notFound.label}</MonoLabel>
+  <h1 class="text-[clamp(3.5rem,10vw,11.25rem)] leading-[0.95] font-medium tracking-[-0.06em]">{notFound.heading}</h1>
+  <p class="max-w-[35rem] text-[1.125rem] leading-normal text-muted">{notFound.body}</p>
+  <a
+    href={notFound.home.href}
+    class="bg-paper px-[1.625rem] py-[1.125rem] text-[0.8125rem] leading-none font-bold tracking-[0.04em] text-black uppercase transition-colors duration-300 hover:bg-white"
+  >
+    {notFound.home.label}
+  </a>
+</main>

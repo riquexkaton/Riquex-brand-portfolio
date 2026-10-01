@@ -1,0 +1,38 @@
+---
+import { closingWords } from '@/data/marquees';
+import { footer } from '@/data/navigation';
+import { site } from '@/data/site';
+import Marquee from '@/ui/Marquee.astro';
+import MonoLabel from '@/ui/MonoLabel.astro';
+import SocialLinks from '@/ui/SocialLinks.astro';
+
+const link = 'inline-flex min-h-11 items-center hover:text-muted';
+---
+
+<footer class="menu-shift overflow-hidden bg-black pt-[clamp(4rem,8vw,7.5rem)]">
+  <Marquee
+    items={closingWords}
+    speed={0.5}
+    reverse
+    itemClass="flex items-center gap-[0.35em] pr-[0.35em] text-[clamp(4rem,12vw,13.75rem)] leading-[1.05] font-medium tracking-[-0.06em]"
+    dotClass="size-[0.14em]"
+  />
+  <div class="mt-[clamp(3rem,6vw,5.5rem)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,13.75rem),1fr))] gap-x-6 gap-y-8 border-t border-paper/16 px-[clamp(1rem,3vw,2.5rem)] pt-[clamp(3.5rem,7vw,6rem)] pb-7">
+    <div class="flex flex-col gap-2.5">
+      <MonoLabel as="span">{footer.emailLabel}</MonoLabel>
+      <a href={`mailto:${site.email}`} class:list={[link, 'self-start text-[1.0625rem] wrap-anywhere']}>
+        {site.email}
+      </a>
+    </div>
+    <div class="flex flex-col gap-2.5">
+      <MonoLabel as="span">{footer.socialsLabel}</MonoLabel>
+      <SocialLinks links={site.socials} class="gap-5" />
+    </div>
+    <div class="flex flex-col items-start gap-2.5">
+      <MonoLabel as="span">{`© ${String(new Date().getFullYear())} ${site.name}`}</MonoLabel>
+      <a href={footer.backToTop.href} class:list={[link, 'text-[0.875rem] font-bold uppercase']}>
+        {footer.backToTop.label}
+      </a>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,24 @@
+---
+interface Props {
+  as?: 'p' | 'span' | 'dt' | 'h2' | 'label';
+  for?: string;
+  /** Decode the text with the scramble effect when it scrolls into view. */
+  scramble?: boolean;
+  class?: string;
+}
+
+const { as: Tag = 'p', for: htmlFor, scramble = false, class: className } = Astro.props;
+---
+
+<Tag
+  for={htmlFor}
+  data-observe={scramble ? '' : undefined}
+  data-scramble={scramble ? '' : undefined}
+  class:list={[
+    'font-mono text-[0.75rem] tracking-[0.06em] text-muted uppercase',
+    scramble && 'pending:opacity-0',
+    className,
+  ]}
+>
+  <slot />
+</Tag>

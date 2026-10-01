@@ -1,0 +1,6 @@
+dist/
+.astro/
+.atl/
+pnpm-lock.yaml
+src/assets/
+public/favicon.svg

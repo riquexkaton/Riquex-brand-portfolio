@@ -1,0 +1,38 @@
+---
+import { header } from '@/data/navigation';
+
+import SideMenu from './SideMenu.astro';
+
+const button = 'pointer-events-auto bg-white px-4 py-3.5 text-[0.9375rem] leading-none font-bold text-black uppercase';
+---
+
+<a
+  href={header.skipLink.href}
+  class="sr-only z-200 bg-white px-3.5 py-2.5 text-black focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+>
+  {header.skipLink.label}
+</a>
+
+<header class="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-between gap-4 px-[clamp(1rem,3vw,2.5rem)] py-4 motion:animate-fade-in motion:[--fade-y:-16px]">
+  <a href={header.home.href} aria-label={header.home.ariaLabel} class:list={[button, 'tracking-[-0.01em]']}>
+    {header.home.label}
+  </a>
+  <button
+    type="button"
+    aria-expanded="false"
+    aria-controls="menu-lateral"
+    class:list={[button, 'flex cursor-pointer items-center gap-3']}
+  >
+    <span>{header.menuButton}</span>
+    <span aria-hidden="true" class="flex w-5 flex-col gap-[0.3125rem]">
+      <span class="h-0.5 bg-black"></span>
+      <span class="ml-auto h-0.5 w-[65%] bg-black"></span>
+    </span>
+  </button>
+</header>
+
+<SideMenu id="menu-lateral" />
+
+<script>
+  import './menu';
+</script>

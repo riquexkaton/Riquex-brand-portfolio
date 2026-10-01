@@ -1,0 +1,66 @@
+import type { gsap as Gsap } from 'gsap';
+import type { ScrollTrigger as ScrollTriggerType } from 'gsap/ScrollTrigger';
+import type Lenis from 'lenis';
+
+export interface MotionContext {
+  gsap: typeof Gsap;
+  ScrollTrigger: typeof ScrollTriggerType;
+  lenis: Lenis;
+}
+
+type MotionCallback = (context: MotionContext) => void;
+
+const queue: MotionCallback[] = [];
+let context: MotionContext | undefined;
+
+/** True when <html class="motion"> was set by the head script (JS on, no reduced motion). */
+export const motionEnabled = (): boolean => document.documentElement.classList.contains('motion');
+
+/** Registers an enhancement that runs once GSAP, ScrollTrigger and Lenis are loaded. */
+export function onMotionReady(callback: MotionCallback): void {
+  if (context) callback(context);
+  else queue.push(callback);
+}
+
+function refreshOnResize(ScrollTrigger: typeof ScrollTriggerType): void {
+  let timer = 0;
+  new ResizeObserver(() => {
+    clearTimeout(timer);
+    timer = window.setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 200);
+  }).observe(document.body);
+}
+
+async function load(): Promise<void> {
+  const [{ gsap }, { ScrollTrigger }, { default: Lenis }] = await Promise.all([
+    import('gsap'),
+    import('gsap/ScrollTrigger'),
+    import('lenis'),
+  ]);
+  gsap.registerPlugin(ScrollTrigger);
+
+  const lenis = new Lenis({ anchors: { duration: 1.3 }, lerp: 0.08, wheelMultiplier: 0.9, touchMultiplier: 1.2 });
+  lenis.on('scroll', () => {
+    ScrollTrigger.update();
+  });
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+  });
+  gsap.ticker.lagSmoothing(0);
+
+  context = { gsap, ScrollTrigger, lenis };
+  for (const callback of queue.splice(0)) callback(context);
+  ScrollTrigger.refresh();
+  refreshOnResize(ScrollTrigger);
+}
+
+/** Lazily loads the motion libraries after `load` and an idle period. Call only when motionEnabled(). */
+export function startMotion(): void {
+  const schedule = (): void => {
+    if ('requestIdleCallback' in window) requestIdleCallback(() => void load(), { timeout: 2000 });
+    else setTimeout(() => void load(), 200);
+  };
+  if (document.readyState === 'complete') schedule();
+  else addEventListener('load', schedule, { once: true });
+}

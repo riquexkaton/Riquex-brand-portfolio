@@ -1,0 +1,33 @@
+---
+import SplitChars from './SplitChars.astro';
+
+interface Props {
+  /** One half of the loop; it is rendered twice so the track can wrap at -50%. */
+  items: readonly string[];
+  /** Design speed in px per frame at 60 fps (the motion runtime derives the duration from it). */
+  speed: number;
+  reverse?: boolean;
+  /** Classes for each item. */
+  itemClass: string;
+  /** Classes for the dot after each item; no dot when omitted. */
+  dotClass?: string;
+  /** Split items into characters with these unit classes; plain text when omitted. */
+  splitUnitClass?: string;
+}
+
+const { items, speed, reverse = false, itemClass, dotClass, splitUnitClass } = Astro.props;
+const loop = [...items, ...items];
+// Stagger index of each item's first character (spaces are not split units).
+const offsets = loop.map((_, i) => loop.slice(0, i).join('').replaceAll(' ', '').length);
+---
+
+<div data-marquee data-speed={speed} aria-hidden="true" class="overflow-hidden">
+  <div class:list={['flex w-max motion-safe:animate-marquee', reverse && '[--marquee-direction:reverse]']}>
+    {loop.map((item, i) => (
+      <span class:list={['whitespace-nowrap', itemClass]}>
+        {splitUnitClass ? <SplitChars text={item} offset={offsets[i] ?? 0} unitClass={splitUnitClass} /> : item}
+        {dotClass && <span class:list={['rounded-full bg-paper', dotClass]} />}
+      </span>
+    ))}
+  </div>
+</div>

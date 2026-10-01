@@ -1,0 +1,34 @@
+---
+import type { ContactFieldName } from '@/data/contact';
+import { contact } from '@/data/contact';
+import MonoLabel from '@/ui/MonoLabel.astro';
+
+interface Props {
+  name: ContactFieldName;
+}
+
+const { name } = Astro.props;
+const { label, placeholder } = contact.fields[name];
+const id = `f-${name}`;
+const control =
+  'w-full rounded-none border-b border-paper/30 bg-transparent py-3 text-[clamp(1.25rem,1.8vw,1.625rem)] tracking-[-0.02em] text-paper outline-none transition-[border-color] duration-300 focus:border-paper aria-invalid:not-focus:border-error';
+const shared = { id, name, placeholder, 'aria-invalid': 'false' as const, 'aria-describedby': `${id}-error` };
+---
+
+<div class="flex flex-col gap-1.5">
+  <MonoLabel as="label" for={id}>
+    {label}
+  </MonoLabel>
+  {name === 'message' ? (
+    <textarea {...shared} rows="4" class:list={[control, 'resize-y leading-[1.35]']} />
+  ) : (
+    <input
+      {...shared}
+      type={name === 'email' ? 'email' : 'text'}
+      autocomplete={name}
+      inputmode={name === 'email' ? 'email' : undefined}
+      class={control}
+    />
+  )}
+  <span id={`${id}-error`} class="min-h-[1.125rem] text-[0.8125rem] text-error"></span>
+</div>

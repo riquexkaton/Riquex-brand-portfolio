@@ -1,0 +1,64 @@
+# riquex-portfolio-landing
+
+Personal portfolio landing for Enrique Urdaneta. Astro 7 (static) + Tailwind v4, deployed to Cloudflare Pages.
+Design source: Claude Design project `def95714-e0eb-457b-b852-19254fe47a59` (`Portfolio.dc.html`).
+
+## Commands
+
+- `pnpm dev` — dev server (use it to verify UI changes). If newly added Tailwind classes don't apply, restart it: the Tailwind Vite plugin can serve stale CSS after many edits (dev-only; builds are unaffected).
+- `pnpm verify` — typecheck + lint + file size + dead code (same gates as pre-commit)
+- `pnpm typecheck` · `pnpm lint` · `pnpm check:size` · `pnpm knip` · `pnpm format`
+
+## Non-negotiable rules
+
+1. **Never build to verify.** Use `pnpm typecheck`, `pnpm lint` or the dev server. Only build for deploys or Lighthouse runs.
+2. **Never bypass the gates.** No `--no-verify`, no `eslint-disable` for architecture/size rules, no raising limits to make a file pass — split the file instead.
+3. **Max 200 lines per file** (any extension, CSS included). Limits live in `quality.config.js`, shared by ESLint and `scripts/check-file-size.js`. Functions ≤ 60 lines, complexity ≤ 8, depth ≤ 3, params ≤ 3.
+4. **Tailwind first.** Use variants before custom CSS (`starting:`, `details-content:`, `motion:`, `pending:`, `has-[…]`). Custom CSS only when Tailwind can't express it (`@custom-variant`, `@utility`, keyframes in `@theme`, base rules), and only in `src/styles/global.css`.
+5. **No dead code.** `knip` must stay clean: no unused files, exports or dependencies.
+
+## Architecture (enforced by eslint-plugin-boundaries)
+
+```
+src/pages     → composition only            may import: layouts, features
+src/layouts   → html shell, head, SEO       may import: ui, data, motion, styles, assets
+src/features/<section> → one folder per page section (markup + its client scripts)
+                                             may import: ui, data, motion, assets, same feature only
+src/ui        → presentational, props only  may import: ui
+src/data      → typed content only          may import: assets, data (type-only)
+src/motion    → client motion runtime       may import: motion
+```
+
+- A feature never imports another feature. Shared pieces go to `ui/` (presentational) or `data/` (content).
+- Pages can't import data: page-specific content goes through a feature (e.g. `features/not-found` for the 404).
+- In `<script>` blocks, import with `./` or `@/` only (`../` is banned because boundaries can't resolve it there).
+- `gsap` and `lenis` are imported **only** inside `src/motion/`. Features register enhancements through the motion runtime (`onMotionReady`).
+- Every file under `src/` must belong to one of these layers.
+
+## Performance rules (Lighthouse)
+
+- **Above-the-fold content must paint without JS.** Never start the hero (or anything visible on load) at `opacity: 0` or hidden behind a script. Intro effects are CSS; the hero portrait is revealed by a CSS curtain over an already-painted image.
+- Motion libraries load lazily (dynamic `import()` after load + idle) and never under `prefers-reduced-motion`.
+- Hidden initial states for reveals apply only under the `html.motion` class set by the inline head script. No-JS and reduced-motion users see everything. Elements opt in with `data-observe`; the observer in `motion/reveal.ts` sets `data-inview` once.
+- Text splitting happens at build time (`ui/SplitChars.astro`), not with SplitText.
+- **Zero third-party requests at runtime:** fonts via the Astro Fonts API (self-hosted), icons as inline SVG from `simple-icons` at build time, images via `astro:assets` `<Picture>` (AVIF + WebP).
+- Interactive patterns go native first: `<details name>` for the accordion, CSS `:has()` for hover states. The side menu is a visibility-toggled panel, not a modal `<dialog>` (its display toggling broke the open/close transitions); `menu.ts` makes the rest of the page `inert`.
+- While the menu is open the page slides left (`menu-shift` utility + `menu-open` variant). It animates `left`, never a transform on `main`/`footer`: a transformed ancestor breaks the fixed ScrollTrigger pin. The pinned carousel (`data-pinned`) slides with `translate` instead.
+- Scroll locking must not change the page width: `<html>` keeps `scrollbar-gutter: stable`. Otherwise the page jumps when the scrollbar disappears and the body `ResizeObserver` fires `ScrollTrigger.refresh()` mid-animation.
+- Reveal overlays (e.g. the hero curtain) sit outside the clipping box they cover and overhang it by 1px; inside the same clip, anti-aliased edges leak thin lines of the content below.
+- The Claude browser pane often reports `document.hidden`: compositor animations don't render in its screenshots. Verify motion with measurements (`getAnimations()`, computed styles), not screenshots.
+
+## Conventions
+
+- Code, identifiers and comments: English. UI copy: Spanish, matching the design.
+- `compressHTML: 'jsx'` drops whitespace between elements on separate lines. When inline elements must wrap or be separated (lists of words, links), emit the space explicitly with `{' '}`, and keep it outside any `whitespace-nowrap` element.
+- Type-checked lint applies to `.ts` files only; `.astro` files and their `<script>` blocks use `disableTypeChecked` (the virtual TSX gives false positives). a11y lint: `eslint-plugin-jsx-a11y-x` (the original plugin doesn't support ESLint 10).
+- Content lives in `src/data/*` (`as const satisfies`), never hardcoded in features.
+- TypeScript is pinned to `~6.0`: `typescript-eslint` (<6.1) and `@astrojs/check` (^5 || ^6) don't support TS 7 yet. Don't upgrade until both do.
+- Node ≥ 24 (`.nvmrc`). `eslint-plugin-astro` 3.x declares node ^24.16.
+- Conventional commits, no AI attribution.
+
+## Pending before production
+
+- `src/data/site.ts`: real social URLs (currently `#`) and the contact form backend (`/api/contact` has no handler yet).
+- `site` in `astro.config` is a placeholder (`https://riquex-portfolio.pages.dev`); update it when the domain is set.

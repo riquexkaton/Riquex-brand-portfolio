@@ -1,0 +1,17 @@
+---
+import MonoLabel from './MonoLabel.astro';
+import SplitTitle from './SplitTitle.astro';
+
+interface Props {
+  title: string;
+  label: string;
+  class?: string;
+}
+
+const { title, label, class: className } = Astro.props;
+---
+
+<div class:list={['flex flex-wrap items-end justify-between gap-6', className]}>
+  <SplitTitle text={title} class="text-[clamp(3.5rem,10vw,11.25rem)] leading-[0.95] tracking-[-0.06em]" />
+  <MonoLabel scramble>{label}</MonoLabel>
+</div>

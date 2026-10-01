@@ -1,0 +1,80 @@
+---
+import { Picture } from 'astro:assets';
+
+import portrait from '@/assets/enrique-portrait.webp';
+import { hero } from '@/data/hero';
+import { heroWords } from '@/data/marquees';
+import { site } from '@/data/site';
+import Marquee from '@/ui/Marquee.astro';
+import SplitChars from '@/ui/SplitChars.astro';
+
+import ScrollHint from './ScrollHint.astro';
+---
+
+<section
+  id="top"
+  aria-label={hero.ariaLabel}
+  class="relative z-0 flex h-svh min-h-[38.75rem] flex-col items-center justify-center gap-[clamp(2.25rem,5svh,4rem)] overflow-hidden bg-black pt-[clamp(6rem,13svh,8.125rem)] pb-[calc(clamp(1rem,3svh,2rem)+5rem)]"
+>
+  <h1 class="sr-only">{hero.heading}</h1>
+  <div class="relative flex w-full items-center justify-center">
+    <div data-hero-mask class="absolute inset-0 z-1 flex flex-col justify-center">
+      <Marquee
+        items={heroWords}
+        speed={0.45}
+        itemClass="block pr-[0.28em] text-[clamp(6rem,17vw,20rem)] leading-[1.08] font-medium tracking-[-0.06em]"
+        splitUnitClass="motion:animate-rise motion:[animation-delay:calc(250ms+var(--i)*22ms)]"
+      />
+    </div>
+    <!-- The curtain lives outside the clipping box and overhangs it by 1px: inside the same clip, the
+         photo bleeds through the anti-aliased edges as thin light lines while it animates. -->
+    <div
+      data-hero-photo
+      class="relative z-2 after:absolute after:-inset-px after:origin-top after:scale-y-0 after:bg-black motion:after:animate-curtain"
+    >
+      <div class="relative aspect-square w-[clamp(14.375rem,min(30vw,42svh),33.75rem)] overflow-hidden bg-photo">
+        <Picture
+          src={portrait}
+          alt={site.portraitAlt}
+          formats={['avif']}
+          fallbackFormat="webp"
+          widths={[320, 480, 640, 800, 1080]}
+          sizes="calc(1.3 * clamp(230px, min(30vw, 42vh), 540px))"
+          loading="eager"
+          fetchpriority="high"
+          draggable="false"
+          class="block size-full object-cover object-[53%_50%] motion:animate-settle"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="relative z-3 flex flex-col items-center gap-7 px-5 text-center">
+    <p class="max-w-[40rem] text-[clamp(1.25rem,2.1vw,2.125rem)] leading-[1.2] tracking-[-0.025em] text-balance">
+      <SplitChars
+        text={hero.tagline}
+        by="words"
+        unitClass="motion:animate-rise motion:[--rise-from:110%] motion:[animation-delay:calc(550ms+var(--i)*30ms)] motion:[animation-duration:0.9s]"
+      />
+    </p>
+    <div class="motion:animate-fade-in motion:[--fade-y:18px]">
+      <a
+        href={hero.cta.href}
+        data-magnetic
+        class="group inline-flex items-center gap-[clamp(1rem,1.6vw,1.5rem)] bg-paper py-[clamp(0.5rem,0.7vw,0.625rem)] pr-[clamp(0.5rem,0.7vw,0.625rem)] pl-[clamp(1.625rem,2.4vw,2.25rem)] text-[clamp(0.9375rem,1.2vw,1.1875rem)] leading-none font-bold tracking-[0.04em] text-black uppercase [transition:background-color_.35s,color_.35s,translate_.6s_var(--ease-power3)] hover:bg-white"
+      >
+        <span>{hero.cta.label}</span>
+        <span
+          aria-hidden="true"
+          class="flex size-[clamp(2.75rem,3.6vw,3.5rem)] items-center justify-center overflow-hidden bg-black text-[1.25rem] text-paper"
+        >
+          <span class="block motion:group-hover:animate-arrow-in">→</span>
+        </span>
+      </a>
+    </div>
+  </div>
+  <ScrollHint />
+</section>
+
+<script>
+  import './hero-motion';
+</script>

@@ -1,0 +1,28 @@
+---
+interface Props {
+  links: readonly { label: string; href: string }[];
+  /** Append the ↗ glyph to each label. */
+  arrow?: boolean;
+  class?: string;
+}
+
+const { links, arrow = false, class: className } = Astro.props;
+---
+
+<ul class:list={['flex flex-wrap', className]}>
+  {links.map(({ label, href }) => {
+    const external = /^https?:\/\//.test(href);
+    return (
+      <li>
+        <a
+          href={href}
+          target={external ? '_blank' : undefined}
+          rel={external ? 'noopener noreferrer' : undefined}
+          class="inline-flex min-h-11 items-center text-[0.875rem] font-bold uppercase hover:text-muted"
+        >
+          {arrow ? `${label} ↗` : label}
+        </a>
+      </li>
+    );
+  })}
+</ul>

@@ -1,0 +1,25 @@
+---
+interface Props {
+  name: string;
+  icon?: { path: string };
+  /** Last item of its group: ends with a period instead of a comma. */
+  last: boolean;
+}
+
+const { name, icon, last } = Astro.props;
+---
+
+<span data-tech class="cursor-default whitespace-nowrap transition-opacity duration-350">
+  {icon && (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      class="mr-[0.2em] inline size-[0.62em] align-[-0.02em]"
+    >
+      <path d={icon.path} />
+    </svg>
+  )}
+  {name}
+  <span class="text-faint">{last ? '.' : ','}</span>
+</span>{' '}

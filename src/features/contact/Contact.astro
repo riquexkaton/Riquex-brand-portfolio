@@ -1,0 +1,38 @@
+---
+import { contact } from '@/data/contact';
+import { site } from '@/data/site';
+import MonoLabel from '@/ui/MonoLabel.astro';
+import SocialLinks from '@/ui/SocialLinks.astro';
+import SplitTitle from '@/ui/SplitTitle.astro';
+
+import ContactForm from './ContactForm.astro';
+---
+
+<section id="contacto" class="px-[clamp(1rem,3vw,2.5rem)] py-[clamp(6rem,14vw,12.5rem)]">
+  <MonoLabel scramble class="mb-5">
+    {contact.label}
+  </MonoLabel>
+  <!-- The word is ~4.12em wide: a 4rem floor lets 20vw drive the size on phones so it fits down to 320px. -->
+  <SplitTitle text={contact.title} class="text-[clamp(4rem,20vw,22.5rem)] leading-[0.9] tracking-[-0.07em]" />
+  <div class="mt-[clamp(3rem,6vw,6rem)] grid grid-cols-1 gap-x-12 gap-y-16 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+    <div data-observe class="reveal flex flex-col gap-9">
+      <p class="max-w-[26.25rem] text-[clamp(1.125rem,1.5vw,1.375rem)] leading-normal text-pretty">{contact.intro}</p>
+      <div class="flex flex-col gap-2.5">
+        <MonoLabel as="span">{contact.emailLabel}</MonoLabel>
+        <a
+          href={`mailto:${site.email}`}
+          class="inline-flex min-h-11 items-center self-start text-[clamp(1.25rem,2vw,1.875rem)] font-medium tracking-[-0.03em] wrap-anywhere hover:text-muted"
+        >
+          {site.email}
+        </a>
+      </div>
+      <div class="flex flex-col gap-2.5">
+        <MonoLabel as="span">{contact.socialsLabel}</MonoLabel>
+        <SocialLinks links={site.socials} arrow class="gap-6" />
+      </div>
+    </div>
+    <div data-observe class="reveal">
+      <ContactForm />
+    </div>
+  </div>
+</section>

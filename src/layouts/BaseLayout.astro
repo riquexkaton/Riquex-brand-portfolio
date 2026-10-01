@@ -1,0 +1,72 @@
+---
+import { Font, getImage } from 'astro:assets';
+
+import portrait from '@/assets/enrique-portrait.webp';
+import { notFound as notFoundCopy } from '@/data/not-found';
+import { site } from '@/data/site';
+import { tech } from '@/data/tech';
+import Seo from '@/ui/Seo.astro';
+import '@/styles/global.css';
+
+interface Props {
+  /** Renders the 404 variant: its own title and noindex, no structured data. */
+  notFound?: boolean;
+}
+
+const { notFound = false } = Astro.props;
+const title = notFound ? notFoundCopy.title : site.title;
+
+const og = await getImage({ src: portrait, width: 1200, height: 630, format: 'jpg' });
+const absolute = (path: string): string => new URL(path, Astro.site ?? Astro.url).href;
+const home = absolute('/');
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${home}#person`,
+      name: site.name,
+      jobTitle: site.jobTitle,
+      email: `mailto:${site.email}`,
+      image: absolute(og.src),
+      url: home,
+      knowsAbout: tech.groups.flatMap((group) => group.items.map((item) => item.name)),
+      alumniOf: { '@type': 'CollegeOrUniversity', name: site.alumniOf },
+    },
+    { '@type': 'WebSite', name: site.title, url: home, inLanguage: 'es', author: { '@id': `${home}#person` } },
+  ],
+};
+---
+
+<!doctype html>
+<html
+  lang="es"
+  class="bg-black text-[clamp(16px,0.8333vw,48px)] [interpolate-size:allow-keywords] [scrollbar-color:var(--color-paper)_var(--color-black)] [scrollbar-gutter:stable] [scrollbar-width:thin] text-paper has-[[data-menu][data-open]]:overflow-hidden motion-safe:scroll-smooth [&.lenis]:scroll-auto"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
+    </script>
+    <Font cssVariable="--font-google-sans-flex" preload />
+    <Font cssVariable="--font-ibm-plex-mono" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <Seo
+      title={title}
+      description={site.description}
+      canonical={absolute(Astro.url.pathname)}
+      image={{ url: absolute(og.src), width: 1200, height: 630, alt: site.portraitAlt }}
+      jsonLd={notFound ? undefined : jsonLd}
+      noindex={notFound}
+    />
+  </head>
+  <body class="overflow-x-clip bg-black leading-[normal] antialiased selection:bg-paper selection:text-black">
+    <slot />
+    <script>
+      import '@/motion/boot';
+    </script>
+  </body>
+</html>

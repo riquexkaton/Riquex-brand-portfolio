@@ -1,0 +1,85 @@
+---
+import { menu } from '@/data/navigation';
+import { site } from '@/data/site';
+import SocialLinks from '@/ui/SocialLinks.astro';
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+
+// Design timings. Links and extras only animate in: while closing they hold still until the panel is
+// gone (delay-600, duration-0), then reset for the next open.
+const fade =
+  'translate-y-3 opacity-0 transition-[opacity,translate] delay-600 duration-0 group-data-open/menu:translate-y-0 group-data-open/menu:opacity-100 group-data-open/menu:delay-[calc(350ms+var(--i)*50ms)] group-data-open/menu:duration-600 group-data-open/menu:ease-power3 motion-reduce:transition-none';
+---
+
+<!--
+  Always rendered and visibility-toggled (never display:none), as in the design, so the same CSS
+  transitions run on open and close. menu.ts toggles data-open and makes the rest of the page inert.
+  Not a modal <dialog>: its display toggling broke both transitions.
+-->
+<div
+  id={id}
+  data-menu
+  class="group/menu invisible fixed inset-0 z-80 transition-[visibility] delay-600 duration-0 data-open:visible data-open:delay-0 motion-reduce:delay-0"
+>
+  <div
+    data-menu-backdrop
+    class="absolute inset-0 bg-black/45 opacity-0 transition-opacity duration-400 group-data-open/menu:opacity-100 group-data-open/menu:duration-500 group-data-open/menu:ease-out motion-reduce:transition-none"
+  ></div>
+  <div
+    role="dialog"
+    aria-modal="true"
+    aria-label={menu.ariaLabel}
+    data-lenis-prevent
+    class="absolute inset-y-0 right-0 flex w-[min(38.75rem,100%)] translate-x-full flex-col justify-between gap-12 overflow-y-auto border-l border-paper/12 bg-panel px-[clamp(1.25rem,3vw,2.5rem)] pt-4 pb-8 text-paper transition-[translate] duration-600 ease-expo-in-out group-data-open/menu:translate-x-0 group-data-open/menu:duration-800 group-data-open/menu:ease-expo motion-reduce:transition-none"
+  >
+    <div class="flex items-center justify-between">
+      <span class:list={['font-mono text-[0.75rem] tracking-[0.06em] text-muted uppercase', fade]} style="--i:0">
+        {menu.heading}
+      </span>
+      <button
+        type="button"
+        data-menu-close
+        class="cursor-pointer bg-paper px-4 py-3.5 text-[0.9375rem] leading-none font-bold text-black uppercase"
+      >
+        {menu.close}
+      </button>
+    </div>
+    <nav aria-label={menu.navAriaLabel}>
+      <ul class="flex flex-col gap-1">
+        {menu.links.map(({ label, href }, i) => (
+          <li class="overflow-hidden">
+            <a
+              href={href}
+              style={`--i:${i}`}
+              class="flex translate-y-[110%] items-baseline gap-[1.125rem] text-[clamp(2.5rem,6.4vw,5rem)] leading-[1.05] font-medium tracking-[-0.045em] transition-[translate] delay-600 duration-0 hover:text-muted group-data-open/menu:translate-y-0 group-data-open/menu:delay-[calc(120ms+var(--i)*50ms)] group-data-open/menu:duration-800 group-data-open/menu:ease-expo motion-reduce:transition-none"
+            >
+              <span class="font-mono text-[0.75rem] tracking-[0.04em] text-muted">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span>{label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <div class="flex flex-col gap-5">
+      <a
+        href={`mailto:${site.email}`}
+        style="--i:1"
+        class:list={[
+          'inline-flex min-h-11 items-center self-start text-[clamp(1.125rem,2vw,1.5rem)] tracking-[-0.02em] hover:text-muted',
+          fade,
+        ]}
+      >
+        {site.email}
+      </a>
+      <div class={fade} style="--i:2">
+        <SocialLinks links={site.socials} arrow class="gap-6" />
+      </div>
+    </div>
+  </div>
+</div>

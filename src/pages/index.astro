@@ -1,0 +1,26 @@
+---
+import About from '@/features/about/About.astro';
+import Contact from '@/features/contact/Contact.astro';
+import Experience from '@/features/experience/Experience.astro';
+import Hero from '@/features/hero/Hero.astro';
+import Projects from '@/features/projects/Projects.astro';
+import SiteFooter from '@/features/site-footer/SiteFooter.astro';
+import SiteHeader from '@/features/site-header/SiteHeader.astro';
+import Specialties from '@/features/specialties/Specialties.astro';
+import TechStack from '@/features/tech-stack/TechStack.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout>
+  <SiteHeader />
+  <main class="menu-shift">
+    <Hero />
+    <Specialties />
+    <About />
+    <Experience />
+    <TechStack />
+    <Projects />
+    <Contact />
+  </main>
+  <SiteFooter />
+</BaseLayout>

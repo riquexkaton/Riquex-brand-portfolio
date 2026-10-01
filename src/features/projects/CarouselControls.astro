@@ -1,0 +1,41 @@
+---
+import { projects } from '@/data/projects';
+
+interface Props {
+  total: number;
+}
+
+const { total } = Astro.props;
+const { carousel } = projects;
+const pad = (n: number): string => String(n).padStart(2, '0');
+const round =
+  'flex size-11 cursor-pointer items-center justify-center rounded-full border border-paper/55 text-[1rem] leading-none transition-[background-color,color,border-color] duration-300 hover:border-paper hover:bg-paper hover:text-black';
+---
+
+<!-- Narrow: arrows + counter on the first row, full-width skip link below. Wide: one row (skip · arrows · counter). -->
+<div class="absolute inset-x-0 bottom-0 z-3 grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3.5 px-[clamp(1rem,3vw,2.5rem)] pb-[clamp(1rem,3svh,2rem)] font-mono text-[0.6875rem] tracking-[0.06em] uppercase md:grid-cols-[1fr_auto_1fr] md:gap-4">
+  <a
+    href={carousel.skip.href}
+    class="col-span-2 row-start-2 flex min-h-11 items-center justify-center gap-3 bg-paper px-[1.125rem] py-3.5 leading-none font-semibold text-black transition-colors duration-300 hover:bg-white md:col-span-1 md:row-start-auto md:justify-self-start"
+  >
+    <span>{carousel.skip.label}</span>
+    <span aria-hidden="true" class="text-[0.875rem]">
+      ↓
+    </span>
+  </a>
+  <div class="flex items-center gap-[clamp(0.75rem,1.4vw,1.25rem)]">
+    <button type="button" data-carousel-step="-1" aria-label={carousel.previous} class={round}>
+      ←
+    </button>
+    <!-- Decorative (the buttons carry aria-labels); dropped on narrow screens so the row fits. -->
+    <span class="hidden md:inline">{carousel.navigate}</span>
+    <button type="button" data-carousel-step="1" aria-label={carousel.next} class={round}>
+      →
+    </button>
+  </div>
+  <span
+    data-carousel-status
+    aria-live="polite"
+    class="text-right whitespace-nowrap"
+  >{`${pad(1)} / ${pad(total)}`}</span>
+</div>

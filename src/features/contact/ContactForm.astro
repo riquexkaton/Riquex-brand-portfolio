@@ -1,0 +1,55 @@
+---
+import { contact } from '@/data/contact';
+import { site } from '@/data/site';
+
+import ContactField from './ContactField.astro';
+
+const { submit, success, failure } = contact;
+---
+
+<div
+  data-contact-success
+  role="status"
+  tabindex="-1"
+  hidden
+  class="flex flex-col items-start gap-5 border-t border-paper pt-7 outline-none"
+>
+  <p class="text-[clamp(1.75rem,3vw,3rem)] leading-[1.05] font-medium tracking-[-0.04em]">{success.title}</p>
+  <p class="text-[1.125rem] leading-normal text-muted">{success.body}</p>
+  <button
+    type="button"
+    data-contact-reset
+    class="cursor-pointer border-b border-paper pb-1 text-[0.8125rem] font-bold tracking-[0.04em] uppercase"
+  >
+    {success.reset}
+  </button>
+</div>
+
+<form
+  data-contact-form
+  action={site.contactEndpoint}
+  method="post"
+  novalidate
+  aria-busy="false"
+  class="flex flex-col gap-9"
+>
+  <ContactField name="name" />
+  <ContactField name="email" />
+  <ContactField name="message" />
+  <div class="flex flex-wrap items-center gap-6">
+    <button
+      type="submit"
+      class="flex cursor-pointer items-center gap-3.5 border border-paper bg-paper px-[1.625rem] py-[1.125rem] text-[0.8125rem] leading-none font-bold tracking-[0.04em] text-black uppercase transition-[background-color,border-color] duration-300 hover:border-white hover:bg-white disabled:cursor-default"
+    >
+      <span data-contact-label>{submit.idle}</span>
+      <span aria-hidden="true">→</span>
+    </button>
+    <p data-contact-error role="alert" hidden class="max-w-[21.25rem] text-[0.875rem] text-error">
+      {failure}
+    </p>
+  </div>
+</form>
+
+<script>
+  import './contact-form';
+</script>

@@ -1,0 +1,45 @@
+---
+/**
+ * Build-time text splitter (replaces GSAP SplitText). Screen readers get the plain text;
+ * the visual copy is split into units that expose `--i` (their stagger index) to CSS.
+ */
+interface Props {
+  text: string;
+  by?: 'chars' | 'words';
+  /** First `--i` value, to continue a stagger across several splitters. */
+  offset?: number;
+  /** Wrap each unit in a vertical clip so it can rise from below. */
+  mask?: boolean;
+  /** Classes for every unit (animations, transitions, delays). */
+  unitClass?: string;
+}
+
+const { text, by = 'chars', offset = 0, mask = true, unitClass } = Astro.props;
+
+let index = offset;
+const words = text
+  .split(' ')
+  .map((word) => (by === 'chars' ? Array.from(word) : [word]).map((unit) => ({ unit, index: index++ })));
+// The extra bottom padding keeps descenders inside the clip without changing the line box.
+const maskClass = '-mb-[0.14em] inline-block overflow-x-visible overflow-y-clip pb-[0.14em]';
+---
+
+<span class="sr-only">{text}</span>
+<span aria-hidden="true">
+  {words.map((units, w) => {
+    const rendered = units.map(({ unit, index: i }) => {
+      const span = (
+        <span data-split-unit class:list={['inline-block', unitClass]} style={`--i:${i}`}>
+          {unit}
+        </span>
+      );
+      return mask ? <span class={maskClass}>{span}</span> : span;
+    });
+    return (
+      <>
+        {w > 0 && ' '}
+        {by === 'chars' ? <span class="inline-block whitespace-nowrap">{rendered}</span> : rendered}
+      </>
+    );
+  })}
+</span>

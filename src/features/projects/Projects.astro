@@ -1,0 +1,61 @@
+---
+import { projects } from '@/data/projects';
+import SectionHeading from '@/ui/SectionHeading.astro';
+
+import CarouselControls from './CarouselControls.astro';
+import ProjectCard from './ProjectCard.astro';
+
+const { carousel, items } = projects;
+const edge =
+  'pointer-events-none absolute inset-y-0 z-2 w-[clamp(2.5rem,9vw,10.625rem)] from-black/70 to-transparent backdrop-blur-[0.875rem]';
+---
+
+<section id="proyectos" class="bg-black pt-[clamp(6rem,12vw,10.625rem)]">
+  <SectionHeading
+    title={projects.title}
+    label={projects.label}
+    class="mb-[clamp(3rem,6vw,6rem)] px-[clamp(1rem,3vw,2.5rem)]"
+  />
+  <div
+    data-carousel
+    tabindex="0"
+    role="region"
+    aria-roledescription={carousel.roleDescription}
+    aria-label={carousel.ariaLabel}
+    class="group/carousel relative flex h-svh items-center overflow-hidden bg-black transition-[translate] duration-600 ease-expo-in-out data-pinned:menu-open:-translate-x-menu-shift! data-pinned:menu-open:duration-900 data-pinned:menu-open:ease-expo motion-reduce:transition-none"
+  >
+    <div
+      data-carousel-scroller
+      tabindex="-1"
+      class="w-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] data-enhanced:overflow-visible"
+    >
+      <div
+        data-carousel-track
+        class="flex w-max gap-[14vw] px-[8vw] md:gap-[40vw] md:px-[calc((100vw-min(68vw,80rem,128svh))/2)]"
+      >
+        {items.map((project, i) => (
+          <ProjectCard {...project} index={i} total={items.length} />
+        ))}
+      </div>
+    </div>
+    <div
+      aria-hidden="true"
+      class:list={[edge, 'left-0 bg-linear-to-r mask-[linear-gradient(to_right,#000_25%,transparent)]']}
+    ></div>
+    <div
+      aria-hidden="true"
+      class:list={[edge, 'right-0 bg-linear-to-l mask-[linear-gradient(to_left,#000_25%,transparent)]']}
+    ></div>
+    <CarouselControls total={items.length} />
+    <!-- Pointer-following "visit" label, positioned by visit-cursor.ts relative to this region. -->
+    <span data-visit-cursor aria-hidden="true" class="group/cursor pointer-events-none absolute top-0 left-0 z-4">
+      <span class="block -translate-1/2 scale-50 bg-paper px-4 py-3.5 text-[0.9375rem] leading-none font-bold whitespace-nowrap text-black uppercase opacity-0 transition-[opacity,scale] duration-300 ease-expo group-data-visible/cursor:scale-100 group-data-visible/cursor:opacity-100 motion-reduce:transition-none">
+        {`${carousel.visit} ↗`}
+      </span>
+    </span>
+  </div>
+</section>
+
+<script>
+  import './carousel';
+</script>
