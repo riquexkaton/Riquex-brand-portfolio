@@ -55,6 +55,7 @@ src/motion    → client motion runtime       may import: motion
 - `compressHTML: 'jsx'` drops whitespace between elements on separate lines. When inline elements must wrap or be separated (lists of words, links), emit the space explicitly with `{' '}`, and keep it outside any `whitespace-nowrap` element.
 - Type-checked lint applies to `.ts` files only; `.astro` files and their `<script>` blocks use `disableTypeChecked` (the virtual TSX gives false positives). a11y lint: `eslint-plugin-jsx-a11y-x` (the original plugin doesn't support ESLint 10).
 - Content lives in `src/data/*` (`as const satisfies`), never hardcoded in features.
+- **CSP** (`security.csp` in `astro.config.ts`, emitted as a `<meta>`; dev mode doesn't apply it, test with build + preview): Astro hashes every bundled script and `<style>`, but not `is:inline` scripts. Hash those with `Astro.csp.insertScriptHash` from the exact emitted text (see `BaseLayout`). Trusted Types are enforced: never use `innerHTML`/`insertAdjacentHTML`, set text with `textContent`. Inline `style` attributes are allowed (`style-src-attr`).
 - TypeScript is pinned to `~6.0`: `typescript-eslint` (<6.1) and `@astrojs/check` (^5 || ^6) don't support TS 7 yet. Don't upgrade until both do.
 - Node ≥ 24 (`.nvmrc`). `eslint-plugin-astro` 3.x declares node ^24.16.
 - Conventional commits, no AI attribution.
