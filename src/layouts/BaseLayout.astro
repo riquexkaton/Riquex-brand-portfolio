@@ -1,4 +1,6 @@
 ---
+import { createHash } from 'node:crypto';
+
 import { Font, getImage } from 'astro:assets';
 
 import portrait from '@/assets/enrique-portrait.webp';
@@ -15,6 +17,12 @@ interface Props {
 
 const { notFound = false } = Astro.props;
 const title = notFound ? notFoundCopy.title : site.title;
+
+// Runs before first paint: hidden reveal states only apply under html.motion. Astro's CSP doesn't hash
+// is:inline scripts, so the hash is added here from the exact emitted text.
+const motionScript =
+  "if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');";
+Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(motionScript).digest('base64')}`);
 
 const og = await getImage({ src: portrait, width: 1200, height: 630, format: 'jpg' });
 const absolute = (path: string): string => new URL(path, Astro.site ?? Astro.url).href;
@@ -47,9 +55,7 @@ const jsonLd = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script is:inline>
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
-    </script>
+    <script is:inline set:html={motionScript}></script>
     <Font cssVariable="--font-google-sans-flex" preload />
     <Font cssVariable="--font-ibm-plex-mono" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

@@ -12,6 +12,25 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'always',
   },
+  // Hash-based CSP in a <meta> tag: Astro hashes every script and <style> it emits.
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "object-src 'none'",
+        "require-trusted-types-for 'script'",
+      ],
+      styleDirective: {
+        // Every stylesheet is inlined (and hashed), so style-src needs no source. Split-text staggers read
+        // `style="--i:N"`, so inline style attributes stay allowed (style-src-attr).
+        resources: [{ resource: "'unsafe-inline'", kind: 'attribute' }],
+      },
+    },
+  },
+  // No Markdown here; the default Shiki highlighter emits inline styles CSP would block.
+  markdown: { syntaxHighlight: false },
   integrations: [sitemap()],
   fonts: [
     {
