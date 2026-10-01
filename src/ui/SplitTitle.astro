@@ -9,7 +9,7 @@ interface Props {
 const { text, class: className } = Astro.props;
 ---
 
-<h2 data-observe class:list={['font-medium', className]}>
+<h2 data-observe aria-label={text} class:list={['font-medium', className]}>
   <SplitChars
     text={text}
     unitClass="transition-[translate] delay-[calc(var(--i)*35ms)] duration-1100 ease-expo pending:translate-y-[115%]"

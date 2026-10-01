@@ -1,7 +1,9 @@
 ---
 /**
- * Build-time text splitter (replaces GSAP SplitText). Screen readers get the plain text;
- * the visual copy is split into units that expose `--i` (their stagger index) to CSS.
+ * Build-time text splitter (replaces GSAP SplitText). Units expose `--i` (their stagger index) to CSS.
+ * The text is rendered once, so crawlers read it once. Word splits read naturally; char splits are
+ * hidden from assistive tech (letters in inline-block spans can be spelled out), so their parent
+ * names the text: SplitTitle sets `aria-label`, and the marquee is decorative.
  */
 interface Props {
   text: string;
@@ -24,8 +26,7 @@ const words = text
 const maskClass = '-mb-[0.14em] inline-block overflow-x-visible overflow-y-clip pb-[0.14em]';
 ---
 
-<span class="sr-only">{text}</span>
-<span aria-hidden="true">
+<span aria-hidden={by === 'chars' ? 'true' : undefined}>
   {words.map((units, w) => {
     const rendered = units.map(({ unit, index: i }) => {
       const span = (
