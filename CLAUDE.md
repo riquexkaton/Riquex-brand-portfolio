@@ -1,6 +1,6 @@
 # riquex-portfolio-landing
 
-Personal portfolio landing for Enrique Urdaneta. Astro 7 (static) + Tailwind v4, deployed to Cloudflare Pages.
+Personal portfolio landing for Enrique Urdaneta. Astro 7 (static) + Tailwind v4, deployed to Cloudflare Workers static assets (`wrangler.jsonc`).
 Design source: Claude Design project `def95714-e0eb-457b-b852-19254fe47a59` (`Portfolio.dc.html`).
 
 ## Commands
@@ -8,6 +8,7 @@ Design source: Claude Design project `def95714-e0eb-457b-b852-19254fe47a59` (`Po
 - `pnpm dev` — dev server (use it to verify UI changes). If newly added Tailwind classes don't apply, restart it: the Tailwind Vite plugin can serve stale CSS after many edits (dev-only; builds are unaffected).
 - `pnpm verify` — typecheck + lint + file size + dead code (same gates as pre-commit)
 - `pnpm typecheck` · `pnpm lint` · `pnpm check:size` · `pnpm knip` · `pnpm format`
+- `pnpm run deploy:cf` — build + `wrangler deploy` (needs `pnpm dlx wrangler@4 login` once). Always `pnpm run`: plain `pnpm deploy` is pnpm's built-in workspace command.
 
 ## Non-negotiable rules
 
@@ -60,5 +61,7 @@ src/motion    → client motion runtime       may import: motion
 
 ## Pending before production
 
-- `src/data/site.ts`: real social URLs (currently `#`) and the contact form backend (`/api/contact` has no handler yet).
-- `site` in `astro.config` is a placeholder (`https://riquex-portfolio.pages.dev`); update it when the domain is set.
+- **Not public yet:** `public/_headers` sends `X-Robots-Tag: noindex` on every path. Remove it at launch (don't swap it for a robots.txt `Disallow`: crawlers that can't fetch a page never see its noindex).
+- `src/data/site.ts`: real social URLs (currently `#`).
+- Contact form backend: `/api/contact` has no handler yet. Plan: a Worker script (`main` + `ASSETS` binding in `wrangler.jsonc`) sending through Cloudflare Email Routing's `send_email` binding to the verified address; it needs the custom domain on Cloudflare.
+- `site` in `astro.config` is a placeholder (`https://riquex-portfolio.pages.dev`); set the custom domain there and attach it to the Worker.

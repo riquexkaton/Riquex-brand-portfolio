@@ -17,7 +17,7 @@
     "check:size": "node scripts/check-file-size.js",
     "knip": "knip",
     "verify": "pnpm typecheck && pnpm lint && pnpm check:size && pnpm knip",
-    "deploy:cf": "pnpm build && pnpm dlx wrangler@4 pages deploy dist --project-name=riquex-portfolio",
+    "deploy:cf": "pnpm build && pnpm dlx wrangler@4 deploy",
     "prepare": "husky"
   },
   "lint-staged": {
