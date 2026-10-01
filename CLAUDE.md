@@ -1,6 +1,6 @@
 # riquex-portfolio-landing
 
-Personal portfolio landing for Enrique Urdaneta. Astro 7 (static) + Tailwind v4, deployed to Cloudflare Workers static assets (`wrangler.jsonc`).
+Personal portfolio landing for Enrique Urdaneta. Astro 7 (static) + Tailwind v4, deployed to Cloudflare Workers static assets (`wrangler.jsonc`) at https://enriqueurdaneta.dev (Custom Domain; workers.dev is disabled).
 Design source: Claude Design project `def95714-e0eb-457b-b852-19254fe47a59` (`Portfolio.dc.html`).
 
 ## Commands
@@ -64,5 +64,4 @@ src/motion    → client motion runtime       may import: motion
 
 - **Not public yet:** `public/_headers` sends `X-Robots-Tag: noindex` on every path. Remove it at launch (don't swap it for a robots.txt `Disallow`: crawlers that can't fetch a page never see its noindex).
 - `src/data/site.ts`: real social URLs (currently `#`).
-- Contact form backend: `/api/contact` has no handler yet. Plan: a Worker script (`main` + `ASSETS` binding in `wrangler.jsonc`) sending through Cloudflare Email Routing's `send_email` binding to the verified address; it needs the custom domain on Cloudflare.
-- `site` in `astro.config` is a placeholder (`https://riquex-portfolio.pages.dev`); set the custom domain there and attach it to the Worker.
+- Contact form backend: `/api/contact` has no handler yet. Plan: a Worker script (`main` + `ASSETS` binding in `wrangler.jsonc`) sending through Cloudflare Email Routing's `send_email` binding to the verified address; it needs Email Routing enabled on `enriqueurdaneta.dev` with the destination address verified.

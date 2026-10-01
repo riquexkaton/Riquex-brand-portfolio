@@ -2,8 +2,7 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, fontProviders } from 'astro/config';
 
-// TODO: replace with the production domain once it is decided.
-const SITE_URL = 'https://riquex-portfolio.pages.dev';
+const SITE_URL = 'https://enriqueurdaneta.dev';
 
 export default defineConfig({
   site: SITE_URL,
