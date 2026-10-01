@@ -1,0 +1,2 @@
+# Copy to .dev.vars for `pnpm dlx wrangler@4 dev`. Local sends are simulated: nothing is delivered.
+CONTACT_TO=you@example.com

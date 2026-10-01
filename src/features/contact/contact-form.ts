@@ -32,6 +32,12 @@ function readMessage(form: HTMLFormElement): ContactMessage {
   return { name: value('name'), email: value('email'), message: value('message') };
 }
 
+/** The honeypot travels with the message: the Worker silently drops submissions that fill it. */
+function readHoneypot(form: HTMLFormElement): string {
+  const entry = new FormData(form).get(contact.honeypot.name);
+  return typeof entry === 'string' ? entry : '';
+}
+
 /** Shows each field's error (or clears it) and focuses the first invalid control. */
 function validate({ form }: FormParts, message: ContactMessage): boolean {
   const invalid = findInvalidFields(message);
@@ -56,7 +62,7 @@ async function send(parts: FormParts, message: ContactMessage): Promise<void> {
     const response = await fetch(parts.form.action, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(message),
+      body: JSON.stringify({ ...message, [contact.honeypot.name]: readHoneypot(parts.form) }),
     });
     if (!response.ok) throw new Error(`Contact endpoint answered ${String(response.status)}`);
     parts.form.reset();

@@ -1,4 +1,4 @@
-// Fails when a text file at the repository root or under src/ or scripts/ exceeds MAX_FILE_LINES.
+// Fails when a text file at the repository root or under src/, scripts/ or worker/ exceeds MAX_FILE_LINES.
 import { readdirSync, readFileSync } from 'node:fs';
 import { extname, join, relative } from 'node:path';
 
@@ -14,7 +14,7 @@ const countLines = (text) => text.split('\n').length - (text.endsWith('\n') ? 1 
 const rootFiles = readdirSync(ROOT, { withFileTypes: true })
   .filter((entry) => entry.isFile() && !IGNORED_ROOT_FILES.has(entry.name))
   .map((entry) => join(ROOT, entry.name));
-const nestedFiles = ['src', 'scripts'].flatMap((dir) =>
+const nestedFiles = ['src', 'scripts', 'worker'].flatMap((dir) =>
   readdirSync(join(ROOT, dir), { recursive: true, withFileTypes: true })
     .filter((entry) => entry.isFile())
     .map((entry) => join(entry.parentPath, entry.name)),

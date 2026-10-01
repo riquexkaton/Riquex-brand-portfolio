@@ -17,7 +17,8 @@ const allow = (from, to) => ({ from: { element: { type: from } }, allow: { to: {
 const motionLibraries = { regex: '^(gsap|lenis)(/|$)', message: 'Import gsap/lenis only inside src/motion.' };
 
 export default defineConfig(
-  globalIgnores(['dist/', '.astro/', 'node_modules/']),
+  // .wrangler/ holds wrangler dev's generated bundles (it's gitignored, but ESLint doesn't read .gitignore).
+  globalIgnores(['dist/', '.astro/', '.wrangler/', 'node_modules/']),
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,

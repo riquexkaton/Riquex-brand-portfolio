@@ -12,7 +12,7 @@ export const site = {
   email: 'enriquealejand26@gmail.com',
   alumniOf: 'IUTIRLA',
   portraitAlt: 'Retrato de Enrique Urdaneta',
-  // TODO: no backend yet — the contact form shows its error state until this endpoint exists.
+  // Served by the Worker in worker/ (the only path that skips the static assets).
   contactEndpoint: '/api/contact',
   // TODO: replace the '#' placeholders with the real profile URLs.
   socials: [

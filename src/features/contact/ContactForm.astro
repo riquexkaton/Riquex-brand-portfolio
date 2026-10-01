@@ -4,7 +4,7 @@ import { site } from '@/data/site';
 
 import ContactField from './ContactField.astro';
 
-const { submit, success, failure } = contact;
+const { submit, success, failure, honeypot } = contact;
 ---
 
 <div
@@ -36,6 +36,11 @@ const { submit, success, failure } = contact;
   <ContactField name="name" />
   <ContactField name="email" />
   <ContactField name="message" />
+  <!-- Honeypot: out of sight, out of the tab order and hidden from assistive tech, so only bots fill it. -->
+  <div aria-hidden="true" class="sr-only">
+    <label for="f-website">{honeypot.label}</label>
+    <input id="f-website" name={honeypot.name} type="text" tabindex="-1" autocomplete="off" />
+  </div>
   <div class="flex flex-wrap items-center gap-6">
     <button
       type="submit"

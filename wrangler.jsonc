@@ -8,8 +8,21 @@
   "routes": [{ "pattern": "enriqueurdaneta.dev", "custom_domain": true }],
   // Serve only from the custom domain, so workers.dev doesn't duplicate the content.
   "workers_dev": false,
+  // Backend for /api/* only (the contact form). Every other path stays a pure static asset.
+  "main": "worker/index.ts",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "404-page"
-  }
+    "not_found_handling": "404-page",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
+  },
+  // No destination_address: an unrestricted binding can still only reach verified Email Routing
+  // destinations. The recipient comes from the CONTACT_TO secret (`wrangler secret put CONTACT_TO`).
+  "send_email": [{ "name": "CONTACT_EMAIL" }],
+  "vars": {
+    // Sender on the Email Routing domain. Not secret: it only appears as the From of the notification.
+    "CONTACT_FROM": "contacto@enriqueurdaneta.dev",
+  },
+  // 3 messages per minute per visitor IP (counted per Cloudflare location).
+  "ratelimits": [{ "name": "CONTACT_LIMITER", "namespace_id": "1001", "simple": { "limit": 3, "period": 60 } }],
 }

@@ -11,7 +11,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "typecheck": "astro check",
+    "typecheck": "astro check && tsc -p worker",
     "lint": "eslint . --max-warnings=0",
     "format": "prettier --write .",
     "check:size": "node scripts/check-file-size.js",
@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@cloudflare/workers-types": "^5.20261001.1",
     "@eslint/js": "^10.0.1",
     "eslint": "^10.11.0",
     "eslint-import-resolver-typescript": "^4.4.5",

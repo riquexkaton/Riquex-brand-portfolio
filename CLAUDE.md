@@ -7,8 +7,9 @@ Design source: Claude Design project `def95714-e0eb-457b-b852-19254fe47a59` (`Po
 
 - `pnpm dev` — dev server (use it to verify UI changes). If newly added Tailwind classes don't apply, restart it: the Tailwind Vite plugin can serve stale CSS after many edits (dev-only; builds are unaffected).
 - `pnpm verify` — typecheck + lint + file size + dead code (same gates as pre-commit)
-- `pnpm typecheck` · `pnpm lint` · `pnpm check:size` · `pnpm knip` · `pnpm format`
+- `pnpm typecheck` (`astro check` + `tsc -p worker`) · `pnpm lint` · `pnpm check:size` · `pnpm knip` · `pnpm format`
 - `pnpm run deploy:cf` — build + `wrangler deploy` (needs `pnpm dlx wrangler@4 login` once). Always `pnpm run`: plain `pnpm deploy` is pnpm's built-in workspace command.
+- `pnpm dlx wrangler@4 dev` — serves an existing `dist/` plus the `/api/*` Worker locally (don't build just for this). Needs `.dev.vars` (copy `.dev.vars.example`). `send_email` is simulated: the message lands in `.wrangler/tmp/email/`. Test with curl and `-H "Origin: http://127.0.0.1:8787"`.
 
 ## Non-negotiable rules
 
@@ -35,6 +36,7 @@ src/motion    → client motion runtime       may import: motion
 - In `<script>` blocks, import with `./` or `@/` only (`../` is banned because boundaries can't resolve it there).
 - `gsap` and `lenis` are imported **only** inside `src/motion/`. Features register enhancements through the motion runtime (`onMotionReady`).
 - Every file under `src/` must belong to one of these layers.
+- `worker/` (outside `src/` and its layers) is the Cloudflare Worker behind `/api/*`: `assets.run_worker_first` sends only those paths to it, everything else stays a static asset with `public/_headers`. It has its own `tsconfig.json` (Workers runtime types, no DOM) and never imports from `src/`; the field limits and honeypot name it shares with the form are mirrored in `src/data/contact.ts`.
 
 ## Performance rules (Lighthouse)
 
@@ -64,4 +66,4 @@ src/motion    → client motion runtime       may import: motion
 
 - **Not public yet:** `public/_headers` sends `X-Robots-Tag: noindex` on every path. Remove it at launch (don't swap it for a robots.txt `Disallow`: crawlers that can't fetch a page never see its noindex).
 - `src/data/site.ts`: real social URLs (currently `#`).
-- Contact form backend: `/api/contact` has no handler yet. Plan: a Worker script (`main` + `ASSETS` binding in `wrangler.jsonc`) sending through Cloudflare Email Routing's `send_email` binding to the verified address; it needs Email Routing enabled on `enriqueurdaneta.dev` with the destination address verified.
+- Contact form (`worker/`): enable Email Routing on `enriqueurdaneta.dev` and verify the Gmail destination address (dashboard), then `pnpm dlx wrangler@4 secret put CONTACT_TO` with that address (never commit it). Until then `/api/contact` fails and the form shows its error state.
