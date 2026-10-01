@@ -9,7 +9,8 @@ export const site = {
   title: 'Enrique Urdaneta — Full Stack Developer',
   description:
     'Portafolio de Enrique Urdaneta, Full Stack Developer: productos web, móviles y de escritorio a medida con TypeScript, React, Vue, Node.js y PostgreSQL.',
-  email: 'enriquealejand26@gmail.com',
+  // Email Routing forwards it to the personal inbox, which stays off the public site.
+  email: 'enrique@enriqueurdaneta.dev',
   alumniOf: 'IUTIRLA',
   portraitAlt: 'Retrato de Enrique Urdaneta',
   // Served by the Worker in worker/ (the only path that skips the static assets).
