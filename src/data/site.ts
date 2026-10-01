@@ -15,11 +15,10 @@ export const site = {
   portraitAlt: 'Retrato de Enrique Urdaneta',
   // Served by the Worker in worker/ (the only path that skips the static assets).
   contactEndpoint: '/api/contact',
-  // TODO: replace the '#' placeholders with the real profile URLs.
   socials: [
-    { label: 'TikTok', href: '#' },
-    { label: 'Instagram', href: '#' },
-    { label: 'LinkedIn', href: '#' },
+    { label: 'TikTok', href: 'https://www.tiktok.com/@riquex_developer' },
+    { label: 'Instagram', href: 'https://www.instagram.com/riquex_developer/' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/enrique-urdaneta-dev/' },
   ],
 } as const satisfies {
   name: string;

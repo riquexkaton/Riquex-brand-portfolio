@@ -65,5 +65,8 @@ src/motion    → client motion runtime       may import: motion
 ## Pending before production
 
 - **Not public yet:** `public/_headers` sends `X-Robots-Tag: noindex` on every path. Remove it at launch (don't swap it for a robots.txt `Disallow`: crawlers that can't fetch a page never see its noindex).
-- `src/data/site.ts`: real social URLs (currently `#`).
-- Contact form (`worker/`): enable Email Routing on `enriqueurdaneta.dev` and verify the Gmail destination address (dashboard), then `pnpm dlx wrangler@4 secret put CONTACT_TO` with that address (never commit it). Until then `/api/contact` fails and the form shows its error state.
+
+## Email
+
+- Cloudflare Email Routing on `enriqueurdaneta.dev` forwards `enrique@` (the public address in `site.email`) to the owner's inbox, which never appears in the repo or the site.
+- The form sends from `contacto@` (`CONTACT_FROM`) to the `CONTACT_TO` runtime secret (dashboard → Worker → Settings → Variables and Secrets, or `pnpm dlx wrangler@4 secret put CONTACT_TO`). Without it `/api/contact` answers 500 and the form shows its error state.
