@@ -3,7 +3,7 @@ import type { Env } from './env';
 import { fail, json, readText } from './http';
 import { parseJson, readSubmission, type ContactMessage } from './validation';
 
-// A full form (5000 + 100 + 254 characters, at most 3 UTF-8 bytes each) plus the JSON keys fits.
+// A full form (1000 + 60 + 254 characters, at most 6 bytes each once JSON-escaped) plus the keys fits.
 const MAX_BODY_BYTES = 16 * 1024;
 
 const isJson = (request: Request): boolean =>

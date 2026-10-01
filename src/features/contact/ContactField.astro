@@ -1,5 +1,5 @@
 ---
-import type { ContactFieldName } from '@/data/contact';
+import type { ContactFieldName, FieldSpec } from '@/data/contact';
 import { contact } from '@/data/contact';
 import MonoLabel from '@/ui/MonoLabel.astro';
 
@@ -8,14 +8,17 @@ interface Props {
 }
 
 const { name } = Astro.props;
-const { label, placeholder, maxLength } = contact.fields[name];
+const { label, placeholder, minLength, maxLength, counter }: FieldSpec = contact.fields[name];
 const id = `f-${name}`;
 const control =
   'w-full rounded-none border-b border-paper/30 bg-transparent py-3 text-[clamp(1.25rem,1.8vw,1.625rem)] tracking-[-0.02em] text-paper outline-none transition-[border-color] duration-300 focus:border-paper aria-invalid:not-focus:border-error';
+// The form is novalidate: these attributes carry semantics (and the hard length cap), the script validates.
 const shared = {
   id,
   name,
   placeholder,
+  required: true,
+  minlength: minLength,
   maxlength: maxLength,
   'aria-invalid': 'false' as const,
   'aria-describedby': `${id}-error`,
@@ -37,5 +40,17 @@ const shared = {
       class={control}
     />
   )}
-  <span id={`${id}-error`} class="min-h-[1.125rem] text-[0.8125rem] text-error"></span>
+  <div class="flex items-start justify-between gap-4">
+    <span id={`${id}-error`} aria-live="polite" class="min-h-[1.125rem] text-[0.8125rem] text-error"></span>
+    {counter && (
+      <span
+        id={`${id}-counter`}
+        data-near={counter.near}
+        aria-hidden="true"
+        class="shrink-0 font-mono text-[0.75rem] tracking-[0.04em] text-muted data-[level=max]:text-error data-[level=near]:text-paper"
+      >
+        {`0/${maxLength}`}
+      </span>
+    )}
+  </div>
 </div>

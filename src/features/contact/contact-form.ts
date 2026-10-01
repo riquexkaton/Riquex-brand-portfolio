@@ -1,91 +1,74 @@
 import { contact, type ContactFieldName } from '@/data/contact';
 
-import { findInvalidFields, type ContactMessage } from './validation';
+import { controlOf, watchFields } from './field-feedback';
 
-const FIELDS: ContactFieldName[] = ['name', 'email', 'message'];
-
-type Control = HTMLInputElement | HTMLTextAreaElement;
+type ContactMessage = Record<ContactFieldName, string>;
 
 interface FormParts {
   form: HTMLFormElement;
-  submit: HTMLButtonElement;
+  fields: HTMLFieldSetElement;
   label: HTMLElement;
   failure: HTMLElement;
   success: HTMLElement;
 }
 
-const controlOf = (form: HTMLFormElement, field: string): Control | null =>
-  form.querySelector<Control>(`[name="${field}"]`);
-
-function showError(control: Control, message: string): void {
-  control.setAttribute('aria-invalid', String(message !== ''));
-  const error = document.getElementById(`${control.id}-error`);
-  if (error) error.textContent = message;
-}
-
+/** The trimmed values, read from the controls just like the field checks that validated them. */
 function readMessage(form: HTMLFormElement): ContactMessage {
-  const data = new FormData(form);
-  const value = (field: ContactFieldName): string => {
-    const entry = data.get(field);
-    return typeof entry === 'string' ? entry.trim() : '';
-  };
+  const value = (field: ContactFieldName): string => controlOf(form, field)?.value.trim() ?? '';
   return { name: value('name'), email: value('email'), message: value('message') };
 }
 
-/** The honeypot travels with the message: the Worker silently drops submissions that fill it. */
-function readHoneypot(form: HTMLFormElement): string {
+/**
+ * The honeypot travels with the message: the Worker silently drops submissions that fill it.
+ * Serialize before disabling the fieldset, since FormData leaves disabled controls out.
+ */
+function payloadOf(form: HTMLFormElement, message: ContactMessage): string {
   const entry = new FormData(form).get(contact.honeypot.name);
-  return typeof entry === 'string' ? entry : '';
+  return JSON.stringify({ ...message, [contact.honeypot.name]: typeof entry === 'string' ? entry : '' });
 }
 
-/** Shows each field's error (or clears it) and focuses the first invalid control. */
-function validate({ form }: FormParts, message: ContactMessage): boolean {
-  const invalid = findInvalidFields(message);
-  for (const field of FIELDS) {
-    const control = controlOf(form, field);
-    if (control) showError(control, invalid.includes(field) ? contact.fields[field].error : '');
-  }
-  if (invalid[0]) controlOf(form, invalid[0])?.focus();
-  return invalid.length === 0;
-}
-
-function setBusy({ form, submit, label }: FormParts, busy: boolean): void {
+function setBusy({ form, fields, label }: FormParts, busy: boolean): void {
   form.setAttribute('aria-busy', String(busy));
-  submit.disabled = busy;
+  fields.disabled = busy;
   label.textContent = busy ? contact.submit.loading : contact.submit.idle;
 }
 
-async function send(parts: FormParts, message: ContactMessage): Promise<void> {
+async function post(url: string, body: string): Promise<boolean> {
+  try {
+    const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function send(parts: FormParts, body: string): Promise<void> {
+  // Disabling the focused control drops focus to <body>; a failed send gives it back.
+  const focused = document.activeElement;
   setBusy(parts, true);
   parts.failure.hidden = true;
-  try {
-    const response = await fetch(parts.form.action, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...message, [contact.honeypot.name]: readHoneypot(parts.form) }),
-    });
-    if (!response.ok) throw new Error(`Contact endpoint answered ${String(response.status)}`);
-    parts.form.reset();
-    parts.form.hidden = true;
-    parts.success.hidden = false;
-    parts.success.focus();
-  } catch {
+  const sent = await post(parts.form.action, body);
+  setBusy(parts, false);
+  if (!sent) {
     parts.failure.hidden = false;
-  } finally {
-    setBusy(parts, false);
+    if (focused instanceof HTMLElement) focused.focus();
+    return;
   }
+  parts.form.reset();
+  parts.form.hidden = true;
+  parts.success.hidden = false;
+  parts.success.focus();
 }
 
 function setup(parts: FormParts): void {
   const { form, failure, success } = parts;
+  const validate = watchFields(form);
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-    if (form.ariaBusy === 'true') return;
-    const message = readMessage(form);
-    if (validate(parts, message)) void send(parts, message);
+    if (form.ariaBusy === 'true' || !validate()) return;
+    void send(parts, payloadOf(form, readMessage(form)));
   });
-  form.addEventListener('input', ({ target }) => {
-    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) showError(target, '');
+  form.addEventListener('input', () => {
     failure.hidden = true;
   });
   success.querySelector('[data-contact-reset]')?.addEventListener('click', () => {
@@ -96,8 +79,8 @@ function setup(parts: FormParts): void {
 }
 
 const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
-const submit = form?.querySelector<HTMLButtonElement>('[type="submit"]');
+const fields = form?.querySelector<HTMLFieldSetElement>('[data-contact-fields]');
 const label = form?.querySelector<HTMLElement>('[data-contact-label]');
 const failure = form?.querySelector<HTMLElement>('[data-contact-error]');
 const success = document.querySelector<HTMLElement>('[data-contact-success]');
-if (form && submit && label && failure && success) setup({ form, submit, label, failure, success });
+if (form && fields && label && failure && success) setup({ form, fields, label, failure, success });

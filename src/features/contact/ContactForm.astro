@@ -25,37 +25,33 @@ const { submit, success, failure, honeypot } = contact;
   </button>
 </div>
 
-<form
-  data-contact-form
-  action={site.contactEndpoint}
-  method="post"
-  novalidate
-  aria-busy="false"
-  class="flex flex-col gap-9"
->
-  <ContactField name="name" />
-  <ContactField name="email" />
-  <ContactField name="message" />
-  <!-- Honeypot: out of sight, out of the tab order and hidden from assistive tech, so only bots fill it. -->
-  <div aria-hidden="true" class="sr-only">
-    <label for="f-website">{honeypot.label}</label>
-    <input id="f-website" name={honeypot.name} type="text" tabindex="-1" autocomplete="off" />
-  </div>
-  <div class="flex flex-wrap items-center gap-6">
-    <button
-      type="submit"
-      data-magnetic
-      class="cta group flex cursor-pointer items-center gap-3.5 border border-paper bg-paper px-[1.625rem] py-[1.125rem] text-[0.8125rem] leading-none font-bold tracking-[0.04em] text-black uppercase hover:border-white hover:bg-white disabled:cursor-default"
-    >
-      <span data-contact-label>{submit.idle}</span>
-      <span aria-hidden="true" class="flex overflow-hidden">
-        <span class="block motion:group-hover:animate-arrow-in">→</span>
-      </span>
-    </button>
-    <p data-contact-error role="alert" hidden class="max-w-[21.25rem] text-[0.875rem] text-error">
-      {failure}
-    </p>
-  </div>
+<form data-contact-form action={site.contactEndpoint} method="post" novalidate aria-busy="false">
+  <!-- Disabling the fieldset while sending disables every control in it, the submit button included. -->
+  <fieldset data-contact-fields class="flex min-w-0 flex-col gap-9 transition-opacity duration-300 disabled:opacity-60">
+    <ContactField name="name" />
+    <ContactField name="email" />
+    <ContactField name="message" />
+    <!-- Honeypot: out of sight, out of the tab order and hidden from assistive tech, so only bots fill it. -->
+    <div aria-hidden="true" class="sr-only">
+      <label for="f-website">{honeypot.label}</label>
+      <input id="f-website" name={honeypot.name} type="text" tabindex="-1" autocomplete="off" />
+    </div>
+    <div class="flex flex-wrap items-center gap-6">
+      <button
+        type="submit"
+        data-magnetic
+        class="cta group flex cursor-pointer items-center gap-3.5 border border-paper bg-paper px-[1.625rem] py-[1.125rem] text-[0.8125rem] leading-none font-bold tracking-[0.04em] text-black uppercase hover:border-white hover:bg-white disabled:cursor-default"
+      >
+        <span data-contact-label>{submit.idle}</span>
+        <span aria-hidden="true" class="flex overflow-hidden">
+          <span class="block motion:group-hover:animate-arrow-in">→</span>
+        </span>
+      </button>
+      <p data-contact-error role="alert" hidden class="max-w-[21.25rem] text-[0.875rem] text-error">
+        {failure}
+      </p>
+    </div>
+  </fieldset>
 </form>
 
 <script>
