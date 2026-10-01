@@ -1,7 +1,8 @@
 // Static site on Workers static assets (Cloudflare's recommended setup for new projects).
 // public/_headers is applied natively; unknown paths get dist/404.html with a 404 status.
 {
-  "name": "riquex-portfolio",
+  // Must match the Worker connected to the GitHub repo in the Cloudflare dashboard.
+  "name": "riquex-brand-portfolio",
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./dist",
