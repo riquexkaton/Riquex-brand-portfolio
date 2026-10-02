@@ -20,7 +20,11 @@ export default defineConfig({
         "form-action 'self'",
         "object-src 'none'",
         "require-trusted-types-for 'script'",
+        // Cloudflare Web Analytics: the edge injects its beacon into the HTML, which reports here.
+        "connect-src 'self' https://cloudflareinsights.com",
       ],
+      // Overriding the defaults drops 'self', so it is listed again next to the beacon's host.
+      scriptDirective: { resources: ["'self'", 'https://static.cloudflareinsights.com'] },
       styleDirective: {
         // Every stylesheet is inlined (and hashed), so style-src needs no source. Split-text staggers read
         // `style="--i:N"`, so inline style attributes stay allowed (style-src-attr).
