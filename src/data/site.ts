@@ -20,6 +20,8 @@ export const site = {
     { label: 'Instagram', href: 'https://www.instagram.com/riquex_developer/' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/enrique-urdaneta-dev/' },
   ],
+  // Profiles listed only in the structured data (sameAs), not shown in the UI.
+  extraProfiles: ['https://github.com/riquexkaton'],
 } as const satisfies {
   name: string;
   jobTitle: string;
@@ -30,4 +32,5 @@ export const site = {
   portraitAlt: string;
   contactEndpoint: string;
   socials: readonly Link[];
+  extraProfiles: readonly string[];
 };

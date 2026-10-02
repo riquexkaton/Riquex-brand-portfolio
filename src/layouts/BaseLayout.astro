@@ -39,6 +39,8 @@ const jsonLd = {
       email: `mailto:${site.email}`,
       image: absolute(og.src),
       url: home,
+      // Ties the profiles to this person, so searches for the name can surface them together.
+      sameAs: [...site.socials.map((social) => social.href), ...site.extraProfiles],
       knowsAbout: tech.groups.flatMap((group) => group.items.map((item) => item.name)),
       alumniOf: { '@type': 'CollegeOrUniversity', name: site.alumniOf },
     },
