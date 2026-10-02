@@ -4,8 +4,10 @@
 @custom-variant motion (&:where(.motion *));
 /* Element is (or is inside) a [data-observe] element the reveal observer has not marked in view yet. */
 @custom-variant pending (&:where(.motion [data-observe]:not([data-inview]), .motion [data-observe]:not([data-inview]) *));
-/* Element is inside the page while the side menu is open. */
-@custom-variant menu-open (&:where(html:has([data-menu][data-open]) *));
+/* Element is inside the page while the side menu is open. Keep the element itself as the subject: with
+   `:where(html:has(...) *)`, every DOM insertion or removal (ScrollTrigger's probes, the pin spacer)
+   restyled the whole page. */
+@custom-variant menu-open (html:has([data-menu][data-open]) &);
 
 @theme {
   --breakpoint-*: initial;
