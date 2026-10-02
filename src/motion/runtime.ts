@@ -22,14 +22,27 @@ export function onMotionReady(callback: MotionCallback): void {
   else queue.push(callback);
 }
 
-function refreshOnResize(ScrollTrigger: typeof ScrollTriggerType): void {
+/**
+ * Re-measures every trigger when the page height changes on its own (a <details> row opening, late
+ * fonts or images), so the pin keeps its start and end. Heights a full refresh already measured are
+ * skipped: the observer's initial notification and ScrollTrigger's own refreshes (window resizes,
+ * pin spacing). A forced refresh also cancels ScrollTrigger's pending resize refresh, so a window
+ * resize still refreshes once.
+ */
+function refreshOnHeightChange(ScrollTrigger: typeof ScrollTriggerType): void {
+  const { body } = document;
+  const measure = (): number => body.getBoundingClientRect().height;
+  let measuredHeight = measure();
+  ScrollTrigger.addEventListener('refresh', () => {
+    measuredHeight = measure();
+  });
   let timer = 0;
   new ResizeObserver(() => {
     clearTimeout(timer);
     timer = window.setTimeout(() => {
-      ScrollTrigger.refresh();
+      if (measure() !== measuredHeight) ScrollTrigger.refresh();
     }, 200);
-  }).observe(document.body);
+  }).observe(body);
 }
 
 async function load(): Promise<void> {
@@ -52,7 +65,7 @@ async function load(): Promise<void> {
   context = { gsap, ScrollTrigger, lenis };
   for (const callback of queue.splice(0)) callback(context);
   ScrollTrigger.refresh();
-  refreshOnResize(ScrollTrigger);
+  refreshOnHeightChange(ScrollTrigger);
 }
 
 /** Lazily loads the motion libraries after `load` and an idle period. Call only when motionEnabled(). */
