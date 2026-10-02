@@ -25,4 +25,7 @@
   },
   // 3 messages per minute per visitor IP (counted per Cloudflare location).
   "ratelimits": [{ "name": "CONTACT_LIMITER", "namespace_id": "1001", "simple": { "limit": 3, "period": 60 } }],
+  // Workers Logs: keeps the Worker's errors (e.g. a failed send) to review in the dashboard.
+  // Only /api/* runs the Worker, so the volume stays tiny.
+  "observability": { "enabled": true },
 }
