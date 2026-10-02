@@ -45,12 +45,22 @@ function refreshOnHeightChange(ScrollTrigger: typeof ScrollTriggerType): void {
   }).observe(body);
 }
 
+/** Gives the main thread back (to paint, handle input) and resumes ahead of other queued tasks. */
+function yieldToMain(): Promise<void> {
+  if ('scheduler' in window && 'yield' in scheduler) return scheduler.yield();
+  return new Promise((resolve) => {
+    setTimeout(resolve, 0);
+  });
+}
+
 async function load(): Promise<void> {
   const [{ gsap }, { ScrollTrigger }, { default: Lenis }] = await Promise.all([
     import('gsap'),
     import('gsap/ScrollTrigger'),
     import('lenis'),
   ]);
+  // Startup runs as short tasks: module evaluation, setup, then one task per enhancement.
+  await yieldToMain();
   gsap.registerPlugin(ScrollTrigger);
 
   const lenis = new Lenis({ anchors: { duration: 1.3 }, lerp: 0.08, wheelMultiplier: 0.9, touchMultiplier: 1.2 });
@@ -62,9 +72,14 @@ async function load(): Promise<void> {
   });
   gsap.ticker.lagSmoothing(0);
 
-  context = { gsap, ScrollTrigger, lenis };
-  for (const callback of queue.splice(0)) callback(context);
-  ScrollTrigger.refresh();
+  const ready: MotionContext = { gsap, ScrollTrigger, lenis };
+  // In page order. No explicit refresh: each trigger measures itself when created (top to bottom, so
+  // nothing above the pin moves) and creating the pin queues one full refresh for the next frame.
+  for (let callback = queue.shift(); callback; callback = queue.shift()) {
+    await yieldToMain();
+    callback(ready);
+  }
+  context = ready;
   refreshOnHeightChange(ScrollTrigger);
 }
 

@@ -15,8 +15,9 @@ export function pinCarousel(
   { gsap, lenis }: MotionContext,
   { region, scroller, track, cards }: CarouselParts,
 ): (index: number) => void {
-  scroller.dataset.enhanced = '';
+  // Reset the native scroll before switching to the enhanced layout: written after, it forces a reflow.
   scroller.scrollLeft = 0;
+  scroller.dataset.enhanced = '';
 
   const last = cards.length - 1;
   const distance = (): number => (cards[last]?.offsetLeft ?? 0) - (cards[0]?.offsetLeft ?? 0);
