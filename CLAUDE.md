@@ -64,10 +64,6 @@ src/motion    → client motion runtime       may import: motion
 - Node ≥ 24 (`.nvmrc`). `eslint-plugin-astro` 3.x declares node ^24.16.
 - Conventional commits, no AI attribution.
 
-## Pending before production
-
-- **Not public yet:** `public/_headers` sends `X-Robots-Tag: noindex` on every path. Remove it at launch (don't swap it for a robots.txt `Disallow`: crawlers that can't fetch a page never see its noindex).
-
 ## Email
 
 - Cloudflare Email Routing on `enriqueurdaneta.dev` forwards `enrique@` (the public address in `site.email`) to the owner's inbox, which never appears in the repo or the site.
